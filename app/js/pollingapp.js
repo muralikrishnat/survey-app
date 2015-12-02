@@ -1,3 +1,12 @@
+
+$(document).ready(function () {
+    $(".navbar-toggle").click(function () {
+        $(".navbar-collapse").toggle(function () {
+            $(this).removeClass("collapse");
+        });
+    });
+});
+
 var sampleApp = angular.module('sampleApp', ['ngRoute', 'ngResource']);
 sampleApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -7,6 +16,7 @@ sampleApp.config(['$routeProvider', function ($routeProvider) {
         .when('/login', {templateUrl: 'pages/login.html', controller: 'LoginController'})
         .when('/register', {templateUrl: 'pages/register.html', controller: 'RegisterController'})
         .otherwise({redirectTo: '/login'});
+
 }]);
 sampleApp.controller('QuestionsController', function ($scope) {
     $scope.message = 'This is Questions screen';

@@ -1,27 +1,27 @@
 /* CSS used here will be applied after bootstrap.css */
 
-body { 
- /*background: url('../images/loginbg.jpg') no-repeat center center fixed; */
- -webkit-background-size: cover;
- -moz-background-size: cover;
- -o-background-size: cover;
- background-size: cover;
+body {
+    /*background: url('../images/loginbg.jpg') no-repeat center center fixed; */
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .panel-default {
- opacity: 0.9;
- margin-top:30px;
-}
-.form-group.last {
- margin-bottom:0px;
+    opacity: 0.9;
+    margin-top: 30px;
 }
 
+.form-group.last {
+    margin-bottom: 0px;
+}
 
 .btn-link-1.btn-link-1-facebook {
     background: #4862a3 none repeat scroll 0 0;
-    }
+}
 
-    .btn-link-1 {
+.btn-link-1 {
     background: #4aaf51 none repeat scroll 0 0;
     border-radius: 4px;
     color: #fff;

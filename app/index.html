@@ -8,9 +8,16 @@
     <link rel="stylesheet" href="css/font-awesome.css">
     <link rel="stylesheet" href="css/register.css">
 </head>
-<body ng-app="sampleApp">
+<body ng-app="pollingApp">
 
-<div ng-include="'pages/main.html'"></div>
+<!--<div ng-include="'pages/main.html'"></div>-->
+<div>
+    <div ng-include="'pages/partials/header.html'"></div>
+    <div ng-view>
+
+    </div>
+</div>
+
 
 <script src="js/vendor/angular.js"></script>
 <script src="js/vendor/angular-route.js"></script>

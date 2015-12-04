@@ -36,7 +36,7 @@ pollingApp.controller('ReportsController', function ($scope) {
     $scope.message = 'This is reports screensssssssssssssssss';
 });
 pollingApp.controller('UsersListController', function ($scope) {
-    $scope.message = 'This is userslist screen';
+    $scope.message = 'This is userslist screennnnnnnnnnnnnnnnn';
 });
 pollingApp.controller('LoginController', function ($scope) {
     //$scope.message = 'This is login screen';

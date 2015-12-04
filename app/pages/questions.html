@@ -6,7 +6,8 @@
 
                 <form ng-submit="addQuestion()">
                     <div class="input-question">
-                        <input type="text" ng-model="todoInput" size="50" placeholder="Enter your question">
+                        <input type="text" ng-model="todoInput" id="question-text" size="50"
+                               placeholder="Enter your question">
                     </div>
                     <div class="pull-left">
                         <ul>
@@ -15,7 +16,9 @@
                             </li>
                             <li>
                                 <p class="add-button">
-                                    <button type="submit" class="btn btn-info">Add Question</button>
+                                    <button type="submit" id="add-questions-btn" class="btn btn-info"
+                                            ng-click="AddQuestions()">Add Question
+                                    </button>
                                 </p>
                             </li>
                         </ul>

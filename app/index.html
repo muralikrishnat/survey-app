@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head ng-app="pollingApp">
     <title> :: Survey App ::</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
-    <link rel="stylesheet" type="text/css" href="css/sampleapp.css"/>
-    <link rel="stylesheet" type="text/css" href="css/login.css"/>
+    <!-- Start Vendor CSS-->
+    <link rel="stylesheet" href="css/bootstrap.css"/>
     <link rel="stylesheet" href="css/font-awesome.css">
+    <!-- End Vendor CSS-->
+
+    <!-- Start App CSS-->
+    <link rel="stylesheet" href="css/sampleapp.css"/>
+    <link rel="stylesheet" href="css/login.css"/>
     <link rel="stylesheet" href="css/register.css">
+    <link rel="stylesheet" href="css/questions.css">
+    <!-- End App CSS-->
+
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 </head>
-<body ng-app="pollingApp">
+<body>
 
 <!--<div ng-include="'pages/main.html'"></div>-->
 <div>
@@ -18,13 +27,16 @@
     </div>
 </div>
 
-
+<!-- Start JS Vendor Files-->
 <script src="js/vendor/angular.js"></script>
 <script src="js/vendor/angular-route.js"></script>
 <script src="js/vendor/angular-resource.js"></script>
-<script type="text/javascript" src="js/vendor/jquery.js"></script>
-<script type="text/javascript" src="js/vendor/bootstrap.js"></script>
-<script type="text/javascript" src="js/pollingapp.js"></script>
+<script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/bootstrap.js"></script>
+<!-- End JS Vendor Files-->
+
+
+<script src="js/pollingapp.js"></script>
 
 </body>
 </html>

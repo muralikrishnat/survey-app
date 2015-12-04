@@ -63,13 +63,33 @@ module.exports = function (grunt) {
                     }
                 ]
             },
-            all:{
-                files:[
+            all: {
+                files: [
                     {
-                        expand:true,
-                        cwd:'app',
-                        src:'**',
-                        dest:'public'
+                        expand: true,
+                        cwd: 'app',
+                        src: '**',
+                        dest: 'public'
+                    }
+                ]
+            },
+            css: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'app/css',
+                        src: '**',
+                        dest: 'public/css'
+                    }
+                ]
+            },
+            pages: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'app/pages',
+                        src: '**',
+                        dest: 'public/pages'
                     }
                 ]
             }
@@ -98,5 +118,6 @@ module.exports = function (grunt) {
     });
 
 
-    grunt.registerTask('default', [])
+    //grunt.registerTask('default', ['ngAnnotate:all','concat:vendorjs','concat:appjs', 'copy:css','copy:images'])
+    grunt.registerTask('default', ['copy:all'])
 };

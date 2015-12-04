@@ -13,13 +13,17 @@ pollingApp.controller('QuestionsController', function ($scope) {
     // jQuery('#myBtn').click(function(){
     //               jQuery('.modal-popup').removeClass('collapse');
     //               });
-
     $scope.todoList = [{todoText: 'Basic Question', done: false}];
     $scope.addQuestion = function () {
         $scope.todoList.push({todoText: $scope.todoInput, done: false});
         $scope.todoInput = "";
     };
-
+    $scope.AddQuestions = function () {
+        // jQuery('#add-questions-btn').click(function(){
+        var Questions = {};
+        Questions.QuestionText = jQuery('#question-text').val();
+        console.log(Questions);
+    };
     // $scope.remove = function() {
     //     var oldList = $scope.todoList;
     //     $scope.todoList = [];
@@ -35,17 +39,25 @@ pollingApp.controller('UsersListController', function ($scope) {
     $scope.message = 'This is userslist screen';
 });
 pollingApp.controller('LoginController', function ($scope) {
-    $scope.message = 'This is login screen';
+    //$scope.message = 'This is login screen';
+    $scope.LoginBtn = function () {
+        //jQuery('#login-signin-btn').click(function(){
+        var Login = {};
+        Login.Email = jQuery('#inputEmail').val();
+        Login.Pwd = jQuery('#inputPassword').val();
+        console.log(Login);
+    };
 });
 pollingApp.controller('RegisterController', function ($scope) {
-    $scope.message = 'This is Register screen';
-    jQuery('#signup-btn').click(function () {
-        console.log(jQuery('#usernamesignup').val());
-        console.log(jQuery('#emailsignup').val());
-        console.log(jQuery('#passwordsignup').val());
-        console.log(jQuery('#passwordsignup_confirm').val());
-    });
+    $scope.RegisterSignUp = function () {
+        var Register = {};
+        Register.Username = jQuery('#usernamesignup').val();
+        Register.EmailSignUp = jQuery('#emailsignup').val();
+        Register.PasswordSignUp = jQuery('#passwordsignup').val();
+        Register.PwdSignupConfirm = jQuery('#passwordsignup_confirm').val();
 
+        console.log(Register);
+    };
 });
 
 // pollingApp.filter('searchFor',function(){

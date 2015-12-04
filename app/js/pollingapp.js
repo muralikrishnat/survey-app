@@ -33,7 +33,7 @@ pollingApp.controller('QuestionsController', function ($scope) {
     // };
 });
 pollingApp.controller('ReportsController', function ($scope) {
-    $scope.message = 'This is reports screen';
+    $scope.message = 'This is reports screensssssssssssssssss';
 });
 pollingApp.controller('UsersListController', function ($scope) {
     $scope.message = 'This is userslist screen';

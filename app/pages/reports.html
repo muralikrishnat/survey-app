@@ -1,16 +1,18 @@
 <div class="container" ng-controller="ReportsController">
-  <div class="row">   
-<table align="center" class="reports-table">
-  <tr>
-    <th>Questions</th>
-    <th>Answered By</th>    
-    <th>Selected Answer</th>
-  </tr>
-  <tr ng-repeat="x in items">
-    <td>{{x.question}}</td>
-    <td>{{x.answeredBy}}</td>   
-    <td>{{x.selectedAnswer}}</td>
-  </tr>  
-</table>
+  <div class="row">  
+    <div class="reports-section"> 
+        <table align="center" class="reports-table">
+            <tr>
+              <th>Questions</th>
+              <th>Answered By</th>    
+              <th>Selected Answer</th>
+            </tr>
+            <tr ng-repeat="x in items">
+              <td>{{x.question}}</td>
+              <td>{{x.answeredBy}}</td>   
+              <td>{{x.selectedAnswer}}</td>
+            </tr>  
+        </table>
+    </div>
   </div>
 </div>

@@ -1,4 +1,48 @@
-<div ng-controller="QuestionsController">
+<div class="container">
+        <div class="row">
+        <div  ng-controller="QuestionsController">
+            <form>
+                <div class="question-section">
+                    <div class="question-content">
+                        <label>Enter Your Question</label> 
+                        <input type="text" name="question" ng-model="newquestion.question"/>
+                    </div>
+                    <div class="description-content">
+                         <label>Description</label> 
+                        <textarea name="description" ng-model="newquestion.description">
+                        </textarea>
+                    </div>
+                    <div class="save-section">
+                         <input type="hidden" ng-model="newquestion.id" />
+                        <button class="btn btn-info" ng-click="saveQuestion()">SaveQuestion</button>
+                    </div>
+                </div>
+            </form>
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>Entered Question</th>
+                    <th>Description</th>
+                     
+                    <th>Action</th>
+                </tr>
+                <tr ng-repeat="detail in details">
+                    <td>{{detail.question}}</td>
+                    <td>{{detail.description}}</td> 
+                    <td>
+                        <a href="" ng-click="edit(detail.id)">Edit</a>
+                        <br/>
+                        <a href="" ng-click="delete(detail.id)">Delete</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- <div ng-controller="QuestionsController">
     <div class="container">
         <div class="row">
             <div class="col-md-6 col-md-offset-3 question-section">
@@ -14,6 +58,7 @@
                             <li ng-repeat="x in todoList">
                                 <input type="checkbox" ng-model="x.done"> <span ng-bind="x.todoText"></span>
                             </li>
+                            <li></li>
                             <li>
                                 <p class="add-button">
                                     <button type="submit" id="add-questions-btn" class="btn btn-info"
@@ -29,8 +74,8 @@
                     <p class="signin button">
                         <button ng-click="remove()" type="submit" class="btn btn-info">Remove Question</button>
                     </p>
-                </div> -->
+                </div> 
             </div>
         </div>
     </div>
-</div>
+</div> -->

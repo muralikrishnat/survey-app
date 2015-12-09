@@ -1,12 +1,13 @@
 var pollingApp = angular.module('pollingApp', ['ngRoute', 'ngResource']);
 pollingApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
+        .when('/home', {templateUrl: 'pages/homepage.html', controller: 'HomePageController'})
         .when('/questions', {templateUrl: 'pages/questions.html', controller: 'QuestionsController'})
         .when('/reports', {templateUrl: 'pages/reports.html', controller: 'ReportsController'})
         .when('/userslist', {templateUrl: 'pages/userslist.html', controller: 'UsersListController'})
         .when('/login', {templateUrl: 'pages/login.html', controller: 'LoginController'})
         .when('/register', {templateUrl: 'pages/register.html', controller: 'RegisterController'})
-        .otherwise({redirectTo: '/login'});
+        .otherwise({redirectTo: '/home'});
 }]);
 pollingApp.controller('QuestionsController', function ($scope) {
     //$scope.message='This is Questions screen';

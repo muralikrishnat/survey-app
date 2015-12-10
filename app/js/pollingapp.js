@@ -93,29 +93,57 @@ pollingApp.controller('ReportsController', function ($scope) {
     ];
 });
 
-pollingApp.controller('UsersListController', function ($scope) {
+pollingApp.controller('UsersListController', function ($scope, $rootScope, firebasedb) {
     $scope.message = 'This is userslist screen';
+     // this code is for getting users whenever we make call
+                    firebasedb.Users.List().then(function(users){
+                        console.log(users);
+                    });
+
+                    // to get whenever there is userlist changed in firebase DB
+                    // below event will execute and print the list on console
+                    $rootScope.$on('user-list', function(e, d){
+                       $scope.Users = d;
+                       $scope.$apply();
+                    });
 });
 
-pollingApp.controller('LoginController', function ($scope) {
+pollingApp.controller('LoginController', function ($scope,firebasedb) {
     //$scope.message = 'This is login screen';
     //Code for displaying the entered login details in console
     $scope.LoginBtn = function () {
         var Login = {};
-        Login.Email = jQuery('#inputEmail').val();
-        Login.Pwd = jQuery('#inputPassword').val();
+        Login.Email = $scope.LoginEmail;
+        Login.Password = $scope.LoginPassword;
         console.log(Login);
+        firebasedb.Users.authenticateUser(Login).then(function(registeredUser){
+            if(registeredUser){
+                console.log('login succesfull');
+            }
+            else{
+                console.log('login failed');
+            }
+       });
     };
 });
 //Code for displaying the entered registered users in console
-pollingApp.controller('RegisterController', function ($scope) {
+pollingApp.controller('RegisterController', function ($scope, $rootScope, firebasedb) {
     $scope.RegisterSignUp = function () {
-        var Register = {};
-        Register.Username = jQuery('#usernamesignup').val();
-        Register.EmailSignUp = jQuery('#emailsignup').val();
-        Register.PasswordSignUp = jQuery('#passwordsignup').val();
-        Register.PwdSignupConfirm = jQuery('#passwordsignup_confirm').val();
+        var registerObject  = {};
+        registerObject.UserName = $scope.UserName;
+        registerObject.Password = $scope.Password;
+        registerObject.Email = $scope.Email; 
 
-        console.log(Register);
+        console.log(registerObject);
+        firebasedb.Users.registerUser(registerObject).then(function(registeredUser){
+            console.log('User added succesfull');
+       },
+         function(err){
+                        //code for registration Failure
+                        console.log('Registration failed');
+          });
     };
 });
+
+
+  

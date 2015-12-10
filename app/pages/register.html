@@ -8,23 +8,22 @@
                 <div class="col-md-9">
                     <label for="usernamesignup" class="uname pull-left">Your username</label>
                     <input id="usernamesignup" class="form-control" name="usernamesignup" required="required"
-                           type="text" placeholder="Please enter username"/>
+                           type="text" placeholder="Please enter username" ng-model="UserName" />
                 </div>
                 <div class="col-md-9 ">
                     <label for="emailsignup" class="youmail pull-left"> Your email</label>
-                    <input id="emailsignup" class="form-control" name="emailsignup" required="required" type="email"
-                           placeholder="example@mail.com"/>
+                    <input id="emailsignup" class="form-control" name="emailsignup" required="required" type="email" placeholder="example@mail.com" ng-model="Email"/>
                 </div>
                 <div class="col-md-9 ">
                     <label for="passwordsignup" class="youpasswd pull-left">Your password </label>
                     <input id="passwordsignup" class="form-control" name="passwordsignup" required="required"
-                           type="password" placeholder="eg. X8df!90EO"/>
+                           type="password" placeholder="eg. X8df!90EO" ng-model="Password"/>
                 </div>
                 <div class="col-md-9">
                     <label for="passwordsignup_confirm" class="youpasswd pull-left">Please confirm your
                         password </label>
                     <input id="passwordsignup_confirm" class="form-control" name="passwordsignup_confirm"
-                           required="required" type="password" placeholder="eg. X8df!90EO"/>
+                           required="required" type="password" placeholder="eg. X8df!90EO" ng-model="ConfirmPassword"/>
                 </div>
                 <div class="col-md-9">
                     <p class="signin button">

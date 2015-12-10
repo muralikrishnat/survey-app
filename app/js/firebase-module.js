@@ -3,6 +3,7 @@ var firebaseModule = angular.module('firebase-db-module', []);
 firebaseModule.provider('firebasedb', function () {
     var DbRef = null;
     var DbRefUrl = null;
+    var FireBaseUsersUrl = '/appdata/users';
     var events = {};
 
     var generateUUID = function () {
@@ -22,6 +23,19 @@ firebaseModule.provider('firebasedb', function () {
         this.Ref = r || '';
     };
 
+    var convertFirebaseToModel = function (modelType, fireBaseData) {
+        var modelList = [];
+        if(modelType.toUpperCase() == 'User'.toUpperCase()){
+            if (Object.keys(fireBaseData).length > 0) {
+                Object.keys(fireBaseData).forEach(function (userkey) {
+                    var user = fireBaseData[userkey];
+                    var userRef = new Firebase(DbRefUrl + FireBaseUsersUrl + '/' + userkey);
+                    modelList.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
+                });
+            }
+        }
+        return modelList;
+    };
 
     this.config = function (config) {
         if (window.Firebase) {
@@ -33,21 +47,13 @@ firebaseModule.provider('firebasedb', function () {
     this.$get = function ($rootScope) {
         var rootTHIS = this;
 
-        var UsersRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users');
+        var UsersRef = new Firebase(DbRefUrl + FireBaseUsersUrl);
         var UsersList = [];
 
         UsersRef.on('value', function (ss) {
             var fireBaseData = ss.val();
-            UsersList = [];
-            if (Object.keys(fireBaseData).length > 0) {
-                Object.keys(fireBaseData).forEach(function (userkey) {
-                    var user = fireBaseData[userkey];
-                    var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
-                    UsersList.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
-                });
-                $rootScope.$emit('user-list', UsersList);
-            }
-
+            UsersList = convertFirebaseToModel('User', fireBaseData);
+            $rootScope.$emit('user-list', UsersList);
         });
 
 
@@ -59,14 +65,7 @@ firebaseModule.provider('firebasedb', function () {
                 return new Promise(function (resolve, reject) {
                     UsersRef.once('value', function (ss) {
                         var fireBaseData = ss.val();
-                        var users = [];
-                        if (Object.keys(fireBaseData).length > 0) {
-                            Object.keys(fireBaseData).forEach(function (userkey) {
-                                var user = fireBaseData[userkey];
-                                var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
-                                users.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
-                            });
-                        }
+                        var users = convertFirebaseToModel('User', fireBaseData);
                         resolve(users);
                     }, function (err) {
                         resolve([]);
@@ -78,14 +77,7 @@ firebaseModule.provider('firebasedb', function () {
                 return new Promise(function (resolve, reject) {
                     UsersRef.once('value', function (ss) {
                         var fireBaseData = ss.val();
-                        var users = [];
-                        if (Object.keys(fireBaseData).length > 0) {
-                            Object.keys(fireBaseData).forEach(function (userkey) {
-                                var user = fireBaseData[userkey];
-                                var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
-                                users.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
-                            });
-                        }
+                        var users = convertFirebaseToModel('User', fireBaseData);
                         var filteredItems = _.filter(users, function (filterItem) {
                             if (((filterItem.UserName && filterItem.UserName == loginObject.Email) || (filterItem.Email && filterItem.Email == loginObject.Email)) && filterItem.Password == loginObject.Password) {
                                 return true;

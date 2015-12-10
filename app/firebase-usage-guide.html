@@ -3,11 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>Usage Guide for Firebase service</title>
-    <style></style>
+    <style>
+        .guide-section {
+            border: 1px solid #e3e3e3;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #F0F0F0;
+        }
+
+        .section-head {
+            background-color: #e3e3e3;
+            padding: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/default.css">
+
 </head>
 <body>
-    <div class="container">
+<div class="container">
+    <div class="guide-section">
+        <div class="section-head">Set fireBase url in angular.config intial setup of firebase service</div>
+        <pre>
+            <code class="javascript">
+                //Adding firebase module as dependency for angularjs app
+                var myapp = app.module('angularappname',['firebase-db-module',....])
+                ...
 
+                //injecting firebase provider to set primary settings like url.,
+                myapp.config(function(firebasedbProvider,...){
+
+
+                //setting firebase server url as configurations for firebase module
+                var firebaseConfig = {};
+                firebaseConfig.Url = 'https://nimbu-polling.firebaseio.com';
+
+                firebasedbProvider.config(firebaseConfig);
+                });
+            </code>
+        </pre>
     </div>
+
+    <div class="guide-section">
+        <div class="section-head">Sample code for Registering User using firebase angular service</div>
+        <pre>
+           <code class="javascript">
+               app.controller('controllerName', function($scope, $rootScope, firebasedb){
+
+                   var registerObject = {};
+                   registerObject.username = $scope.UserName;
+                   registerObject.password = $scope.Password;
+                   registerObject.Email = $scope.Email;
+
+                   firebasedb.Users.registerUser(registerObject).then(function(registeredUser){
+                        //code for after successfully registered
+                   }, function(err){
+                        //code for registration Failure
+                   });
+               });
+           </code>
+        </pre>
+    </div>
+
+    <div class="guide-section">
+        <div class="section-head">Sample code for getting list of users registered</div>
+        <pre>
+            <code class="javascript">
+                app.controller('controllerName', function($scope, $rootScope, firebasedb){
+
+                    // this code is for getting users whenever we make call
+                    firebasedbfire.Users.List().then(function(users){
+                        console.log(users);
+                    });
+
+                    // to get whenever ther is userlist changed in firebase DB
+                    // below event will execute and print the list on console
+                    $rootScope.$on('user-list', function(e, d){
+                        console.log('user list : ',d);
+                    });
+                });
+            </code>
+        </pre>
+    </div>
+</div>
+<script src="https://highlightjs.org/static/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>

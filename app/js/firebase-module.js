@@ -1,29 +1,125 @@
 var firebaseModule = angular.module('firebase-db-module', []);
 
 firebaseModule.provider('firebasedb', function () {
-    this.FirebaseConfig = {};
-    this.DbRef = null;
+    var DbRef = null;
+    var DbRefUrl = null;
+    var events = {};
+
+    var generateUUID = function () {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    };
+    var UserClass = function (u, p, e, g, r) {
+        this.UserName = u;
+        this.Password = p;
+        this.Email = e;
+        this.Guid = g || generateUUID();
+        this.Ref = r || '';
+    };
+
+
     this.config = function (config) {
-        this.FirebaseConfig.Url = config.Url;
-        if(window.Firebase){
-            this.DbRef = new Firebase(this.FirebaseConfig.Url || 'https://nimbu-polling.firebaseio.com');
+        if (window.Firebase) {
+            DbRefUrl = config.Url;
+            DbRef = new Firebase(config.Url || 'https://nimbu-polling.firebaseio.com');
         }
 
     };
-    this.$get = function () {
+    this.$get = function ($rootScope) {
         var rootTHIS = this;
-        var serviceObject = function () {
-            this.Name = 'Firebase DB Service';
 
-            this.Users = function () {
+        var UsersRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users');
+        var UsersList = [];
+
+        UsersRef.on('value', function (ss) {
+            var fireBaseData = ss.val();
+            UsersList = [];
+            if (Object.keys(fireBaseData).length > 0) {
+                Object.keys(fireBaseData).forEach(function (userkey) {
+                    var user = fireBaseData[userkey];
+                    var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
+                    UsersList.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
+                });
+                $rootScope.$emit('user-list', UsersList);
+            }
+
+        });
+
+
+        var serviceObject = {};
+
+        var UsersClass = function () {
+
+            this.List = function () {
                 return new Promise(function (resolve, reject) {
-                    //rootTHIS.DbRef.child().on('value', function (val) {
-                    //
-                    //});
-                    resolve([{"Name":"Murali"}]);
+                    UsersRef.once('value', function (ss) {
+                        var fireBaseData = ss.val();
+                        var users = [];
+                        if (Object.keys(fireBaseData).length > 0) {
+                            Object.keys(fireBaseData).forEach(function (userkey) {
+                                var user = fireBaseData[userkey];
+                                var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
+                                users.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
+                            });
+                        }
+                        resolve(users);
+                    }, function (err) {
+                        resolve([]);
+                    });
                 });
             };
+
+            this.authenticateUser = function (loginObject) {
+                return new Promise(function (resolve, reject) {
+                    UsersRef.once('value', function (ss) {
+                        var fireBaseData = ss.val();
+                        var users = [];
+                        if (Object.keys(fireBaseData).length > 0) {
+                            Object.keys(fireBaseData).forEach(function (userkey) {
+                                var user = fireBaseData[userkey];
+                                var userRef = new Firebase('https://nimbu-polling.firebaseio.com/appdata/users/' + userkey);
+                                users.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
+                            });
+                        }
+                        var filteredItems = _.filter(users, function (filterItem) {
+                            if (((filterItem.UserName && filterItem.UserName == loginObject.Email) || (filterItem.Email && filterItem.Email == loginObject.Email)) && filterItem.Password == loginObject.Password) {
+                                return true;
+                            }
+                            return false;
+                        });
+                        if (filteredItems.length > 0) {
+                            resolve(filteredItems[0]);
+                        } else {
+                            resolve(null);
+                        }
+                    }, function (err) {
+                        resolve(null);
+                    });
+                });
+
+            };
+
+            this.registerUser = function (registerObject) {
+                return new Promise(function (resolve, reject) {
+                    UsersRef.push(new UserClass(registerObject.UserName, registerObject.Password, registerObject.Email), function (err) {
+                        if (!err) {
+                            resolve(registerObject);
+                        } else {
+                            reject(err);
+                        }
+                    });
+                });
+
+            };
         };
-        return new serviceObject();
+        serviceObject.Users = new UsersClass();
+
+
+        return serviceObject;
     };
 });

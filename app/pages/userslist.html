@@ -1,1 +1,8 @@
-<h1>This is Users List page</h1>
+<div class="user-list-page">
+    <h1>{{message}}</h1>
+    <div>
+        <ul>
+            <li ng-repeat="user in Users track by $index">{{ user.UserName}}</li>
+        </ul>
+    </div>
+</div>

@@ -4,6 +4,7 @@ firebaseModule.provider('firebasedb', function () {
     var DbRef = null;
     var DbRefUrl = null;
     var FireBaseUsersUrl = '/appdata/users';
+    var FireBaseQuestionssUrl = '/appdata/questions';
     var events = {};
 
     var generateUUID = function () {
@@ -15,25 +16,53 @@ firebaseModule.provider('firebasedb', function () {
         });
         return uuid;
     };
-    var UserClass = function (u, p, e, g, r) {
-        this.UserName = u;
-        this.Password = p;
-        this.Email = e;
-        this.Guid = g || generateUUID();
-        this.Ref = r || '';
+    var UserClass = function (u, r) {
+        this.UserName = u['UserName'];
+        this.Password = u['Password'];
+        this.Email = u['Email'];
+        this.Type = u['Type'] || 'User';
+        this.Guid = u['Guid'] || generateUUID();
+        this.Ref = r ? new Firebase(r) : '';
+    };
+
+    var QuestionClass = function (q, r) {
+        this.Text = q["Text"];
+        this.Type = q["Type"] || 'YesNo';
+        this.Guid = q["Guid"] || generateUUID();
+        this.AddedBy = q["AddedBy"];
+        this.AddedOn = q["AddedOn"] || (new Date()).getTime();
+        this.Ref = r ? new Firebase(r) : null;
+    };
+
+    var convertModelToFirebase = function (modelData) {
+        var fireBaseData = {};
+        Object.keys(modelData).forEach(function (p) {
+            if(p != 'Ref') {
+                fireBaseData[p] = modelData[p];
+            }
+        });
+        return fireBaseData;
     };
 
     var convertFirebaseToModel = function (modelType, fireBaseData) {
         var modelList = [];
-        if(modelType.toUpperCase() == 'User'.toUpperCase()){
-            if (Object.keys(fireBaseData).length > 0) {
-                Object.keys(fireBaseData).forEach(function (userkey) {
-                    var user = fireBaseData[userkey];
-                    var userRef = new Firebase(DbRefUrl + FireBaseUsersUrl + '/' + userkey);
-                    modelList.push(new UserClass(user.UserName, user.Password, user.Email, user.Guid, userRef));
-                });
-            }
+        if (Object.keys(fireBaseData).length > 0) {
+            Object.keys(fireBaseData).forEach(function (dataKey) {
+                var dataObject = fireBaseData[dataKey];
+                var objectToPush = null;
+                if (modelType.toUpperCase() == 'User'.toUpperCase()) {
+                    objectToPush = new UserClass(dataObject, DbRefUrl + FireBaseUsersUrl + '/' + dataKey)
+                } else if (modelType.toUpperCase() == 'Question'.toUpperCase()) {
+                    objectToPush = new QuestionClass(dataObject, DbRefUrl + FireBaseQuestionssUrl + '/' + dataKey)
+                }
+
+                if (objectToPush) {
+                    modelList.push(objectToPush);
+                }
+
+            });
         }
+
         return modelList;
     };
 
@@ -48,7 +77,10 @@ firebaseModule.provider('firebasedb', function () {
         var rootTHIS = this;
 
         var UsersRef = new Firebase(DbRefUrl + FireBaseUsersUrl);
+        var QuestionsRef = new Firebase(DbRefUrl + FireBaseQuestionssUrl);
+
         var UsersList = [];
+        var QuestionsList = [];
 
         UsersRef.on('value', function (ss) {
             var fireBaseData = ss.val();
@@ -56,10 +88,15 @@ firebaseModule.provider('firebasedb', function () {
             $rootScope.$emit('user-list', UsersList);
         });
 
+        QuestionsRef.on('value', function (ss) {
+            var fireBaseData = ss.val();
+            QuestionsList = convertFirebaseToModel('Question', fireBaseData);
+            $rootScope.$emit('question-list', QuestionsList);
+        });
 
         var serviceObject = {};
 
-        var UsersClass = function () {
+        var UserServiceClass = function () {
 
             this.List = function () {
                 return new Promise(function (resolve, reject) {
@@ -98,7 +135,7 @@ firebaseModule.provider('firebasedb', function () {
 
             this.registerUser = function (registerObject) {
                 return new Promise(function (resolve, reject) {
-                    UsersRef.push(new UserClass(registerObject.UserName, registerObject.Password, registerObject.Email), function (err) {
+                    UsersRef.push(new UserClass(registerObject), function (err) {
                         if (!err) {
                             resolve(registerObject);
                         } else {
@@ -109,8 +146,62 @@ firebaseModule.provider('firebasedb', function () {
 
             };
         };
-        serviceObject.Users = new UsersClass();
+        serviceObject.Users = new UserServiceClass();
 
+        var QuestionServiceClass = function () {
+            this.List = function (questionObject) {
+                return new Promise(function (resolve, reject) {
+                    QuestionsRef.once('value', function (ss) {
+                        var firebaseData = ss.val();
+                        var questions = convertFirebaseToModel('Question', firebaseData);
+                        var filteredQuestions = questions;
+                        if(questionObject){
+                            filteredQuestions = _.filter(questions, function (filterItem) {
+                                return (filterItem.Guid === questionObject.Guid);
+                            })
+                        }
+                        resolve(filteredQuestions);
+                    }, function (err) {
+                        resolve([]);
+                    });
+
+                });
+            };
+
+            this.Update = function (questionObject, isDelete) {
+                return new Promise(function (resolve, reject) {
+                    if(!questionObject.Ref && !questionObject.Guid) {
+                        QuestionsRef.push(new QuestionClass(questionObject), function (err) {
+                            if(!err){
+                                resolve({"ExeStatus": "SUCCESS"});
+                            }else{
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    }else if(questionObject.Ref && questionObject.Guid && isDelete){
+                        questionObject.Ref.remove(function (err) {
+                            if(!err){
+                                resolve({"ExeStatus": "SUCCESS"});
+                            }else{
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        })
+                    }else if(questionObject.Ref && questionObject.Guid && !isDelete){
+                        questionObject.Ref.update(convertModelToFirebase(questionObject), function (err) {
+                            if(!err){
+                                resolve({"ExeStatus": "SUCCESS"});
+                            }else{
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    }else{
+                        resolve({"ExeStatus": "SUCCESS"});
+                    }
+                });
+            };
+
+        };
+        serviceObject.Questions = new QuestionServiceClass();
 
         return serviceObject;
     };

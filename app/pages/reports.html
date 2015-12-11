@@ -1,6 +1,24 @@
 <div class="container" ng-controller="ReportsController">
   <div class="row">  
-    <div class="reports-section"> 
+
+<div class="col-md-8 col-md-offset-2" ng-init="accordion=1">
+  <h3 class="accordion" ng-class="{active:accordion==1}">
+    <a href ng-click="accordion = 1">Question 1</a>
+  </h3>
+  <p class="accordion-content" ng-show="accordion==1">Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
+      
+  <h3 class="accordion" ng-class="{active:accordion==2}">
+    <a href ng-click="accordion = 2">Question 2</a>
+  </h3>
+  <p class="accordion-content" ng-show="accordion==2">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
+      
+  <h3 class="accordion" ng-class="{active:accordion==3}">
+    <a href ng-click="accordion = 3">Question 3</a>
+  </h3>
+  <p class="accordion-content" ng-show="accordion==3">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</p>
+</div>
+
+    <!-- <div class="reports-section"> 
         <table class="reports-table">
             <tr>
               <th>Questions</th>
@@ -13,6 +31,6 @@
               <td>{{x.selectedAnswer}}</td>
             </tr>  
         </table>
-    </div>
+    </div> -->
   </div>
 </div>

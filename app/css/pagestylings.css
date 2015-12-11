@@ -137,3 +137,22 @@ table.reports-table{
     box-shadow: 0 5px 10px gray;
     padding: 0;
  }
+
+ /*----- Accordion -----*/
+h3.accordion{
+    margin: 0;
+}
+.accordion a{
+    padding: 10px;
+    background: #ddd;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 1px;
+}
+.accordion-content{
+    border: 1px solid black;
+    padding: 10px;
+    margin: 1px 0;
+}

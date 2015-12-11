@@ -90,18 +90,18 @@ pollingApp.controller('QuestionsController', function ($scope, ProfileService) {
 //End of code
 pollingApp.controller('ReportsController', function ($scope) {
     //$scope.message = 'This is reports screen';
-    $scope.items = [
-        {
-            question: 'How are you?',
-            answeredBy: 'Nipuna',
-            selectedAnswer: 'yes'
-        },
-        {
-            question: 'Is everything fine?',
-            answeredBy: 'Nisha',
-            selectedAnswer: 'yes'
-        }
-    ];
+    // $scope.items = [
+    //     {
+    //         question: 'How are you?',
+    //         answeredBy: 'Nipuna',
+    //         selectedAnswer: 'yes'
+    //     },
+    //     {
+    //         question: 'Is everything fine?',
+    //         answeredBy: 'Nisha',
+    //         selectedAnswer: 'yes'
+    //     }
+    // ];
 });
 
 pollingApp.controller('UsersListController', function ($scope, $rootScope, firebasedb) {
@@ -122,7 +122,20 @@ pollingApp.controller('UsersListController', function ($scope, $rootScope, fireb
                     });
 });
 
-pollingApp.controller('LoginController', function ($scope,firebasedb) {
+
+//COde for login service
+pollingApp.service('UserService', function () {
+    var currentUser=null;
+     this.set = function (userObject) {
+        currentUser = userObject;
+    }
+
+    this.get = function () {
+         return currentUser;
+    }
+});
+
+pollingApp.controller('LoginController', function ($scope,firebasedb,UserService){
     //$scope.message = 'This is login screen';
     //Code for displaying the entered login details in console
     $scope.LoginBtn = function () {
@@ -133,6 +146,7 @@ pollingApp.controller('LoginController', function ($scope,firebasedb) {
         firebasedb.Users.authenticateUser(Login).then(function(registeredUser){
             if(registeredUser){
                 console.log('login succesfull');
+                UserService.set(registeredUser);
             }
             else{
                 console.log('login failed');

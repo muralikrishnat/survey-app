@@ -1,12 +1,12 @@
 /* CSS used here will be applied after bootstrap.css */
 /*CSS for Login page*/
-body {
-    /*background: url('../images/loginbg.jpg') no-repeat center center fixed; */
+/*body {
+    /*background: url('../images/loginbg.jpg') no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-}
+}*/
 
 .panel-default {
     opacity: 0.9;
@@ -62,8 +62,7 @@ a, a:hover, a:focus {
 .question-section{ 
     border-radius: 5px;
     box-shadow: 0 2px 5px gray;
-    margin: 3% 3% 5% 10%;
-    width: 80%
+    margin: 3% 3% 5% 15%; 
 }
 
 .question-content input , .description-content textarea{ 
@@ -85,6 +84,12 @@ a, a:hover, a:focus {
 
 .question-content, .description-content, .save-section{
 	padding:10px;
+}
+
+.add-icon{
+    background: url('../images/add-icon.png') no-repeat;
+    padding:12px 20px;
+    margin:10px;
 }
 
 /*CSS for Register page*/
@@ -124,4 +129,11 @@ table.reports-table{
  	 font-size: 18px;
     padding: 10px;
     font-family: "Times New Roman", Georgia, Serif;
+ }
+
+/*CSS for Userslist page*/
+ .userslist-content{
+    border: 1px solid gray;
+    box-shadow: 0 5px 10px gray;
+    padding: 0;
  }

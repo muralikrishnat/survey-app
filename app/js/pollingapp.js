@@ -26,7 +26,7 @@ pollingApp.service('ProfileService', function () {
     var details = [{
         id: 0,
         'question': 'How are you?',
-        'description': 'I hope everything is fine!'
+        'type': 'I hope everything is fine!'
     }];
     this.save = function (detail) {
         if (detail.id == null) {
@@ -61,6 +61,13 @@ pollingApp.service('ProfileService', function () {
 });
 
 pollingApp.controller('QuestionsController', function ($scope, ProfileService) {
+     
+//code for hiding questions on buttonclick 
+    $scope.myVar = false;
+    $scope.addQuestion = function() {
+        $scope.myVar = !$scope.myVar;
+    };
+
     $scope.details = ProfileService.list();
     $scope.saveQuestion = function () {
         ProfileService.save($scope.newquestion);
@@ -71,10 +78,14 @@ pollingApp.controller('QuestionsController', function ($scope, ProfileService) {
         if ($scope.newquestion.id == id)
             $scope.newquestion = {};
     }
-    $scope.edit = function (id) {
-        $scope.newquestion = angular.copy(ProfileService.get(id));
-    }
-})
+    // $scope.edit = function (id) {
+    //     $scope.newquestion = angular.copy(ProfileService.get(id));
+    // }
+
+     // firebasedb.Users.List().then(function(){       
+     //            console.log('Question added succesfull');
+     // });
+});
 
 //End of code
 pollingApp.controller('ReportsController', function ($scope) {
@@ -97,6 +108,9 @@ pollingApp.controller('UsersListController', function ($scope, $rootScope, fireb
     $scope.message = 'This is userslist screen';
      // this code is for getting users whenever we make call
                     firebasedb.Users.List().then(function(users){
+                        $scope.Users = users;
+                        $scope.$apply();
+
                         console.log(users);
                     });
 

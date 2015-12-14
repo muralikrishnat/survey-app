@@ -31,13 +31,11 @@
                      
                     <th>Action</th>
                 </tr>
-                <tr ng-repeat="detail in details">
-                    <td>{{detail.Text}}</td>
-                    <td>{{detail.Type}}</td> 
+                <tr ng-repeat="question in questions">
+                    <td>{{question.Text}}</td>
+                    <td>{{question.Type}}</td>
                     <td>
-                        <!-- <a href="" ng-click="edit(detail.id)">Deactivate</a>
-                         <br/> -->
-                       <!--  <a href="" ng-click="delete(detail.id)">Deactivate</a>  -->
+                         <a href="" ng-click="delete(question)">Deactivate</a>
                     </td>
                 </tr>
             </table>
@@ -46,4 +44,3 @@
 </div>
 
 
- 

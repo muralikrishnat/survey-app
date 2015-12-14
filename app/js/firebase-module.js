@@ -31,22 +31,56 @@ firebaseModule.provider('firebasedb', function () {
         this.Guid = q["Guid"] || generateUUID();
         this.AddedBy = q["AddedBy"];
         this.AddedOn = q["AddedOn"] || (new Date()).getTime();
+
+        this.Ref = r ? new Firebase(r) : null;
+        this.Options = [];
+    };
+
+    var UserQuestionAnswerMappingClass = function (m, r) {
+        this.Guid = m['Guid'] || generateUUID();
+        this.QuestionGuid = m['QuestionGuid'];
+        //this is Array,need to store list of answers which are selected by User
+        this.AnswerGuids = m['AnswerGuids'];
+        this.UserGuid = m['UserGuid'];
+        this.AnsweredOn = m['AnsweredOn'];
         this.Ref = r ? new Firebase(r) : null;
     };
 
+    var AnswerClass = function (m, r) {
+        this.Text = m['Text'];
+        this.Guid = m['Guid'] || generateUUID();
+
+        this.Ref = r ? new Firebase(r) : null;
+    };
+
+    var QuestionAnswerClass = function (m, r) {
+        this.Guid = m['Guid'] || generateUUID();
+
+        this.QuestionGuid = m['QuestionGuid'];
+        this.AnswerGuid = m['AnswerGuid'];
+        this.Order = m['Order'];
+
+        this.Ref = r ? new Firebase(r) : null;
+    };
+
+
     var convertModelToFirebase = function (modelData) {
         var fireBaseData = {};
-        Object.keys(modelData).forEach(function (p) {
-            if(p != 'Ref') {
-                fireBaseData[p] = modelData[p];
-            }
-        });
+        if(modelData) {
+            Object.keys(modelData).forEach(function (p) {
+                if (p == 'Ref' || p == 'Options'){
+
+                }else {
+                    fireBaseData[p] = modelData[p];
+                }
+            });
+        }
         return fireBaseData;
     };
 
     var convertFirebaseToModel = function (modelType, fireBaseData) {
         var modelList = [];
-        if (Object.keys(fireBaseData).length > 0) {
+        if (fireBaseData && Object.keys(fireBaseData).length > 0) {
             Object.keys(fireBaseData).forEach(function (dataKey) {
                 var dataObject = fireBaseData[dataKey];
                 var objectToPush = null;
@@ -84,14 +118,18 @@ firebaseModule.provider('firebasedb', function () {
 
         UsersRef.on('value', function (ss) {
             var fireBaseData = ss.val();
-            UsersList = convertFirebaseToModel('User', fireBaseData);
-            $rootScope.$emit('user-list', UsersList);
+            if(fireBaseData) {
+                UsersList = convertFirebaseToModel('User', fireBaseData);
+                $rootScope.$emit('user-list', UsersList);
+            }
         });
 
         QuestionsRef.on('value', function (ss) {
             var fireBaseData = ss.val();
-            QuestionsList = convertFirebaseToModel('Question', fireBaseData);
-            $rootScope.$emit('question-list', QuestionsList);
+            if(fireBaseData) {
+                QuestionsList = convertFirebaseToModel('Question', fireBaseData);
+                $rootScope.$emit('question-list', QuestionsList);
+            }
         });
 
         var serviceObject = {};
@@ -153,14 +191,18 @@ firebaseModule.provider('firebasedb', function () {
                 return new Promise(function (resolve, reject) {
                     QuestionsRef.once('value', function (ss) {
                         var firebaseData = ss.val();
-                        var questions = convertFirebaseToModel('Question', firebaseData);
-                        var filteredQuestions = questions;
-                        if(questionObject){
-                            filteredQuestions = _.filter(questions, function (filterItem) {
-                                return (filterItem.Guid === questionObject.Guid);
-                            })
+                        if(firebaseData) {
+                            var questions = convertFirebaseToModel('Question', firebaseData);
+                            var filteredQuestions = questions;
+                            if (questionObject) {
+                                filteredQuestions = _.filter(questions, function (filterItem) {
+                                    return (filterItem.Guid === questionObject.Guid);
+                                })
+                            }
+                            resolve(filteredQuestions);
+                        }else{
+                            resolve([]);
                         }
-                        resolve(filteredQuestions);
                     }, function (err) {
                         resolve([]);
                     });
@@ -200,8 +242,19 @@ firebaseModule.provider('firebasedb', function () {
                 });
             };
 
+            this.FilterBy = function (filterObject) {
+                return new Promise(function (resolve, reject) {
+                    if (filterObject.By == 'User') {
+                        resolve([]);
+                    }
+                });
+            };
+
         };
         serviceObject.Questions = new QuestionServiceClass();
+
+
+
 
         return serviceObject;
     };

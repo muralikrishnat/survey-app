@@ -4,8 +4,17 @@ firebaseModule.provider('firebasedb', function () {
     var DbRef = null;
     var DbRefUrl = null;
     var FireBaseUsersUrl = '/appdata/users';
-    var FireBaseQuestionssUrl = '/appdata/questions';
+    var FireBaseQuestionsUrl = '/appdata/questions';
+    var FireBaseAnswersUrl = '/appdata/answers';
+    var FireBaseQuestionAnswerUrl = '/appdata/questionanswers';
+    var FireBaseUserQuestionAnswerUrl = '/appdata/userquestionanswers';
     var events = {};
+
+    var UsersList = [];
+    var QuestionsList = [];
+    var AnswersList = [], answersLoaded = false;
+    var QuestionAnswersList = [], questionanswersLoaded = false;
+    var UserQuestionAnswersList = [];
 
     var generateUUID = function () {
         var d = new Date().getTime();
@@ -16,6 +25,7 @@ firebaseModule.provider('firebasedb', function () {
         });
         return uuid;
     };
+
     var UserClass = function (u, r) {
         this.UserName = u['UserName'];
         this.Password = u['Password'];
@@ -33,18 +43,9 @@ firebaseModule.provider('firebasedb', function () {
         this.AddedOn = q["AddedOn"] || (new Date()).getTime();
 
         this.Ref = r ? new Firebase(r) : null;
-        this.Options = [];
+        this.Options = q["Options"] || [];
     };
 
-    var UserQuestionAnswerMappingClass = function (m, r) {
-        this.Guid = m['Guid'] || generateUUID();
-        this.QuestionGuid = m['QuestionGuid'];
-        //this is Array,need to store list of answers which are selected by User
-        this.AnswerGuids = m['AnswerGuids'];
-        this.UserGuid = m['UserGuid'];
-        this.AnsweredOn = m['AnsweredOn'];
-        this.Ref = r ? new Firebase(r) : null;
-    };
 
     var AnswerClass = function (m, r) {
         this.Text = m['Text'];
@@ -63,14 +64,24 @@ firebaseModule.provider('firebasedb', function () {
         this.Ref = r ? new Firebase(r) : null;
     };
 
+    var UserQuestionAnswerMappingClass = function (m, r) {
+        this.Guid = m['Guid'] || generateUUID();
+        this.QuestionGuid = m['QuestionGuid'];
+        //this is Array,need to store list of answers which are selected by User
+        this.AnswerGuids = m['AnswerGuids'];
+        this.UserGuid = m['UserGuid'];
+        this.AnsweredOn = m['AnsweredOn'];
+        this.Ref = r ? new Firebase(r) : null;
+    };
+
 
     var convertModelToFirebase = function (modelData) {
         var fireBaseData = {};
-        if(modelData) {
+        if (modelData) {
             Object.keys(modelData).forEach(function (p) {
-                if (p == 'Ref' || p == 'Options'){
+                if (p == 'Ref' || p == 'Options') {
 
-                }else {
+                } else {
                     fireBaseData[p] = modelData[p];
                 }
             });
@@ -87,7 +98,13 @@ firebaseModule.provider('firebasedb', function () {
                 if (modelType.toUpperCase() == 'User'.toUpperCase()) {
                     objectToPush = new UserClass(dataObject, DbRefUrl + FireBaseUsersUrl + '/' + dataKey)
                 } else if (modelType.toUpperCase() == 'Question'.toUpperCase()) {
-                    objectToPush = new QuestionClass(dataObject, DbRefUrl + FireBaseQuestionssUrl + '/' + dataKey)
+                    objectToPush = new QuestionClass(dataObject, DbRefUrl + FireBaseQuestionsUrl + '/' + dataKey)
+                } else if (modelType.toUpperCase() == 'Answer'.toUpperCase()) {
+                    objectToPush = new AnswerClass(dataObject, DbRefUrl + FireBaseAnswersUrl + '/' + dataKey)
+                }else if (modelType.toUpperCase() == 'QuestionAnswer'.toUpperCase()) {
+                    objectToPush = new QuestionAnswerClass(dataObject, DbRefUrl + FireBaseQuestionAnswerUrl + '/' + dataKey)
+                }else if (modelType.toUpperCase() == 'UserQuestionAnswer'.toUpperCase()) {
+                    objectToPush = new UserQuestionAnswerMappingClass(dataObject, DbRefUrl + FireBaseUserQuestionAnswerUrl + '/' + dataKey)
                 }
 
                 if (objectToPush) {
@@ -100,6 +117,17 @@ firebaseModule.provider('firebasedb', function () {
         return modelList;
     };
 
+
+    var getDefaultAnswers = function (listOfAnswers) {
+        var defaultAnswers = [];
+        _.forEach(listOfAnswers, function (answerItem) {
+            if(answerItem.Text.toUpperCase() == 'Yes'.toUpperCase() || answerItem.Text.toUpperCase() == 'No'.toUpperCase()) {
+                defaultAnswers.push(answerItem);
+            }
+        });
+        return defaultAnswers;
+    };
+
     this.config = function (config) {
         if (window.Firebase) {
             DbRefUrl = config.Url;
@@ -107,18 +135,21 @@ firebaseModule.provider('firebasedb', function () {
         }
 
     };
+
     this.$get = function ($rootScope) {
         var rootTHIS = this;
 
         var UsersRef = new Firebase(DbRefUrl + FireBaseUsersUrl);
-        var QuestionsRef = new Firebase(DbRefUrl + FireBaseQuestionssUrl);
+        var QuestionsRef = new Firebase(DbRefUrl + FireBaseQuestionsUrl);
+        var AnswersRef = new Firebase(DbRefUrl + FireBaseAnswersUrl);
+        var QuestionAnswersRef = new Firebase(DbRefUrl + FireBaseQuestionAnswerUrl);
+        var UserQuestionAnswersRef = new Firebase(DbRefUrl + FireBaseUserQuestionAnswerUrl);
 
-        var UsersList = [];
-        var QuestionsList = [];
+
 
         UsersRef.on('value', function (ss) {
             var fireBaseData = ss.val();
-            if(fireBaseData) {
+            if (fireBaseData) {
                 UsersList = convertFirebaseToModel('User', fireBaseData);
                 $rootScope.$emit('user-list', UsersList);
             }
@@ -126,11 +157,38 @@ firebaseModule.provider('firebasedb', function () {
 
         QuestionsRef.on('value', function (ss) {
             var fireBaseData = ss.val();
-            if(fireBaseData) {
+            if (fireBaseData) {
                 QuestionsList = convertFirebaseToModel('Question', fireBaseData);
                 $rootScope.$emit('question-list', QuestionsList);
             }
         });
+
+        AnswersRef.on('value', function (ss) {
+            var fireBaseData = ss.val();
+            if (fireBaseData) {
+                AnswersList = convertFirebaseToModel('Answer', fireBaseData);
+                answersLoaded = true;
+                //$rootScope.$emit('answer-list', AnswersList);
+            }
+        });
+
+        QuestionAnswersRef.on('value', function (ss) {
+            var fireBaseData = ss.val();
+            if (fireBaseData) {
+                QuestionAnswersList = convertFirebaseToModel('QuestionAnswer', fireBaseData);
+                questionanswersLoaded = true;
+                //$rootScope.$emit('answer-list', AnswersList);
+            }
+        });
+
+        UserQuestionAnswersRef.on('value', function (ss) {
+            var fireBaseData = ss.val();
+            if (fireBaseData) {
+                QuestionAnswersList = convertFirebaseToModel('UserQuestionAnswer', fireBaseData);
+                //$rootScope.$emit('answer-list', AnswersList);
+            }
+        });
+
 
         var serviceObject = {};
 
@@ -191,16 +249,18 @@ firebaseModule.provider('firebasedb', function () {
                 return new Promise(function (resolve, reject) {
                     QuestionsRef.once('value', function (ss) {
                         var firebaseData = ss.val();
-                        if(firebaseData) {
+                        if (firebaseData) {
                             var questions = convertFirebaseToModel('Question', firebaseData);
                             var filteredQuestions = questions;
                             if (questionObject) {
                                 filteredQuestions = _.filter(questions, function (filterItem) {
                                     return (filterItem.Guid === questionObject.Guid);
-                                })
+                                });
+
+                                console.log('questions : ', filteredQuestions);
                             }
                             resolve(filteredQuestions);
-                        }else{
+                        } else {
                             resolve([]);
                         }
                     }, function (err) {
@@ -210,33 +270,81 @@ firebaseModule.provider('firebasedb', function () {
                 });
             };
 
+            this.OptionsForQuestion = function (questionObject) {
+                return new Promise(function (resolve0level, reject0level) {
+                    if(questionObject){
+                        if(questionObject.Type == 'YesNo'){
+                            if(answersLoaded && AnswersList.length > 0){
+                                resolve0level(getDefaultAnswers(AnswersList));
+                            }else{
+                                console.warn("Answers are not available in Server");
+                                resolve0level([]);
+                            }
+                        }
+                    }else{
+                        if(answersLoaded && AnswersList.length > 0){
+                            resolve0level(getDefaultAnswers(AnswersList));
+                        }else{
+                            console.warn("Answers are not available in Server");
+                            resolve0level([]);
+                        }
+                    }
+                });
+            };
+
             this.Update = function (questionObject, isDelete) {
                 return new Promise(function (resolve, reject) {
-                    if(!questionObject.Ref && !questionObject.Guid) {
-                        QuestionsRef.push(new QuestionClass(questionObject), function (err) {
-                            if(!err){
-                                resolve({"ExeStatus": "SUCCESS"});
-                            }else{
+                    if (!questionObject.Ref && !questionObject.Guid) {
+                        var questionToAdd = new QuestionClass(questionObject);
+                        QuestionsRef.push(questionToAdd, function (err) {
+                            if (!err) {
+                                serviceObject.Answers.List().then(function(d){
+                                    if(d.length > 0){
+                                        var defaultAnswersList = getDefaultAnswers(d);
+                                        var questionAnswerToAdd1 = new QuestionAnswerClass({ "QuestionGuid": questionToAdd.Guid, "AnswerGuid": defaultAnswersList[0].Guid, "Order": 1 });
+                                        var questionAnswerToAdd2 = new QuestionAnswerClass({ "QuestionGuid": questionToAdd.Guid, "AnswerGuid": defaultAnswersList[1].Guid, "Order": 2 });
+                                        var waitingForPromise = 2;
+                                        QuestionAnswersRef.push(questionAnswerToAdd1, function (err) {
+                                            waitingForPromise = waitingForPromise - 1;
+                                            if(waitingForPromise == 0){
+                                                resolve({"ExeStatus": "SUCCESS", "OptionsAdded": true});
+                                            }
+                                        });
+
+                                        QuestionAnswersRef.push(questionAnswerToAdd2, function (err) {
+                                            waitingForPromise = waitingForPromise - 1;
+                                            if(waitingForPromise == 0){
+                                                resolve({"ExeStatus": "SUCCESS", "OptionsAdded": true});
+                                            }
+                                        });
+                                    }else{
+                                        resolve({"ExeStatus": "SUCCESS", "OptionsAdded": false});
+                                    }
+                                });
+                                //QuestionAnswersRef.push();
+
+
+                            } else {
                                 resolve({"ExeStatus": "FAIL"});
                             }
                         });
-                    }else if(questionObject.Ref && questionObject.Guid && isDelete){
+                    } else if (questionObject.Ref && questionObject.Guid && isDelete) {
                         questionObject.Ref.remove(function (err) {
-                            if(!err){
+                            if (!err) {
                                 resolve({"ExeStatus": "SUCCESS"});
-                            }else{
+                            } else {
                                 resolve({"ExeStatus": "FAIL"});
                             }
                         })
-                    }else if(questionObject.Ref && questionObject.Guid && !isDelete){
+                    } else if (questionObject.Ref && questionObject.Guid && !isDelete) {
                         questionObject.Ref.update(convertModelToFirebase(questionObject), function (err) {
-                            if(!err){
+                            if (!err) {
                                 resolve({"ExeStatus": "SUCCESS"});
-                            }else{
+                            } else {
                                 resolve({"ExeStatus": "FAIL"});
                             }
                         });
-                    }else{
+                    } else {
                         resolve({"ExeStatus": "SUCCESS"});
                     }
                 });
@@ -245,16 +353,205 @@ firebaseModule.provider('firebasedb', function () {
             this.FilterBy = function (filterObject) {
                 return new Promise(function (resolve, reject) {
                     if (filterObject.By == 'User') {
-                        resolve([]);
+                        //QuestionsRef.once('value', function (ss) {
+                        //    var firebaseData = ss.val();
+                        //    if (firebaseData) {
+                        //        var questions = convertFirebaseToModel('Question', firebaseData);
+                        //        var filteredQuestions = questions;
+                        //        if (questionObject) {
+                        //            filteredQuestions = _.filter(questions, function (filterItem) {
+                        //                return (filterItem.Guid === questionObject.Guid);
+                        //            })
+                        //        }
+                        //        resolve(filteredQuestions);
+                        //    } else {
+                        //        resolve([]);
+                        //    }
+                        //}, function (err) {
+                        //    resolve([]);
+                        //});
                     }
+
+                    resolve([]);
                 });
             };
 
         };
         serviceObject.Questions = new QuestionServiceClass();
 
+        var AnswerServiceClass = function () {
+
+            this.List = function (answerObject, qObject) {
+                return new Promise(function (resolve, reject) {
+                    AnswersRef.once('value', function (ss) {
+                        var firebaseData = ss.val();
+                        if (firebaseData) {
+                            var answers = convertFirebaseToModel('Answer', firebaseData);
+                            var filteredAnswers = answers;
+                            resolve(filteredAnswers);
+                        } else {
+                            resolve([]);
+                        }
+                    }, function (err) {
+                        resolve([]);
+                    });
+
+                });
+            };
+
+            this.Update = function (answerObject, isDelete) {
+                return new Promise(function (resolve, reject) {
+                    if (!answerObject.Ref && !answerObject.Guid) {
+                        AnswersRef.push(new AnswerClass(answerObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else if (answerObject.Ref && answerObject.Guid && isDelete) {
+                        AnswersRef.Ref.remove(function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        })
+                    } else if (answerObject.Ref && answerObject.Guid && !isDelete) {
+                        AnswersRef.Ref.update(convertModelToFirebase(answerObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else {
+                        resolve({"ExeStatus": "SUCCESS"});
+                    }
+                });
+            };
+        };
+        serviceObject.Answers = new AnswerServiceClass();
 
 
+        var QuestionAnswerServiceClass = function () {
+
+            this.List = function (qnaObject, qObject) {
+                return new Promise(function (resolve, reject) {
+                    QuestionAnswersRef.once('value', function (ss) {
+                        var firebaseData = ss.val();
+                        if (firebaseData) {
+                            var questionanswers = convertFirebaseToModel('QuestionAnswer', firebaseData);
+                            var filteredLists = questionanswers;
+                            if(questionanswers.length > 0){
+
+                            }else{
+
+                            }
+                            resolve(filteredLists);
+                        } else {
+                            resolve([]);
+                        }
+                    }, function (err) {
+                        resolve([]);
+                    });
+
+                });
+            };
+
+            this.Update = function (qnsanswerObject, isDelete) {
+                return new Promise(function (resolve, reject) {
+                    if (!qnsanswerObject.Ref && !qnsanswerObject.Guid) {
+                        QuestionAnswersRef.push(new QuestionAnswerClass(qnsanswerObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else if (qnsanswerObject.Ref && qnsanswerObject.Guid && isDelete) {
+                        QuestionAnswersRef.Ref.remove(function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        })
+                    } else if (qnsanswerObject.Ref && qnsanswerObject.Guid && !isDelete) {
+                        QuestionAnswersRef.Ref.update(convertModelToFirebase(qnsanswerObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else {
+                        resolve({"ExeStatus": "SUCCESS"});
+                    }
+                });
+            };
+        };
+        serviceObject.QuestionAnswers = new QuestionAnswerServiceClass();
+
+
+        var UserQuestionAnswerServiceClass = function () {
+
+            this.List = function (uqnaObject) {
+                return new Promise(function (resolve, reject) {
+                    UserQuestionAnswersRef.once('value', function (ss) {
+                        var firebaseData = ss.val();
+                        if (firebaseData) {
+                            var questionanswers = convertFirebaseToModel('UserQuestionAnswer', firebaseData);
+                            var filteredLists = questionanswers;
+                            if(questionanswers.length > 0){
+
+                            }else{
+
+                            }
+                            resolve(filteredLists);
+                        } else {
+                            resolve([]);
+                        }
+                    }, function (err) {
+                        resolve([]);
+                    });
+
+                });
+            };
+
+            this.Update = function (uqnaObject, isDelete) {
+                return new Promise(function (resolve, reject) {
+                    if (!uqnaObject.Ref && !uqnaObject.Guid) {
+                        UserQuestionAnswersRef.push(new UserQuestionAnswerServiceClass(uqnaObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else if (uqnaObject.Ref && uqnaObject.Guid && isDelete) {
+                        UserQuestionAnswersRef.Ref.remove(function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        })
+                    } else if (uqnaObject.Ref && uqnaObject.Guid && !isDelete) {
+                        UserQuestionAnswersRef.Ref.update(convertModelToFirebase(uqnaObject), function (err) {
+                            if (!err) {
+                                resolve({"ExeStatus": "SUCCESS"});
+                            } else {
+                                resolve({"ExeStatus": "FAIL"});
+                            }
+                        });
+                    } else {
+                        resolve({"ExeStatus": "SUCCESS"});
+                    }
+                });
+            };
+        };
+        serviceObject.UserQuestionAnswers = new UserQuestionAnswerServiceClass();
 
         return serviceObject;
     };

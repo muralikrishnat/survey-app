@@ -20,6 +20,18 @@ angular.module('pollingApp').controller('QuestionsController', function ($scope,
         }
     };
 
+
+    //As we navigate to and for  other Pages 'question-list' listener will  not not show at that time
+    //to handle such scenarios we need some thing like this...which will get Questions instantly whenever we come from some other page
+    //TODO: Need more sophisticated way to show existing Questions on coming from other page
+    firebasedb.Questions.List().then(function (d) {
+        $scope.safeApply(function () {
+            $scope.questions = d;
+        });
+    });
+
+
+
     //here 'question-list' is event name which is already declared in firebasedb service
     //for handling list we have to listen to this event, b'coz we are handling respective events in firebase db service
     //to avoid unneccesaary event listening in controller...in future we can change firebase db service not the controller

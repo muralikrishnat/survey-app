@@ -128,6 +128,8 @@ firebaseModule.provider('firebasedb', function () {
         return defaultAnswers;
     };
 
+
+
     this.config = function (config) {
         if (window.Firebase) {
             DbRefUrl = config.Url;
@@ -146,6 +148,31 @@ firebaseModule.provider('firebasedb', function () {
         var UserQuestionAnswersRef = new Firebase(DbRefUrl + FireBaseUserQuestionAnswerUrl);
 
 
+        var serviceObject = {};
+
+        var awaitForAnswersFn = [];
+        var resolveFn = null;
+
+        var getOptionsForQuestions = function (qList) {
+            var promises = [];
+            if(qList.length > 0) {
+                for (var i = 0; i < qList.length; i++) {
+                    promises.push(new Promise(function (resolve0level, reject0level) {
+                        var questionToGetOptions = qList[i];
+                        serviceObject.Questions.OptionsForQuestion(qList[i]).then(function (opts) {
+                            questionToGetOptions.Options = opts;
+                            resolve0level(opts);
+                        });
+                    }));
+                }
+            }else{
+                promises.push(new Promise(function (resolve, reject) {
+                    resolve([]);
+                }));
+            }
+            return promises;
+        };
+
 
         UsersRef.on('value', function (ss) {
             var fireBaseData = ss.val();
@@ -159,7 +186,17 @@ firebaseModule.provider('firebasedb', function () {
             var fireBaseData = ss.val();
             if (fireBaseData) {
                 QuestionsList = convertFirebaseToModel('Question', fireBaseData);
-                $rootScope.$emit('question-list', QuestionsList);
+                AnswersRef.once('value', function (aa) {
+                    var fireBaseData = aa.val();
+                    if (fireBaseData) {
+                        AnswersList = convertFirebaseToModel('Answer', fireBaseData);
+                        answersLoaded = true;
+                    }
+                    Promise.all(getOptionsForQuestions(QuestionsList)).then(function(g){
+                        console.log('After getting all the options for questions ', g);
+                        $rootScope.$emit('question-list', QuestionsList);
+                    });
+                });
             }
         });
 
@@ -168,7 +205,6 @@ firebaseModule.provider('firebasedb', function () {
             if (fireBaseData) {
                 AnswersList = convertFirebaseToModel('Answer', fireBaseData);
                 answersLoaded = true;
-                //$rootScope.$emit('answer-list', AnswersList);
             }
         });
 
@@ -190,7 +226,8 @@ firebaseModule.provider('firebasedb', function () {
         });
 
 
-        var serviceObject = {};
+
+
 
         var UserServiceClass = function () {
 
@@ -256,10 +293,20 @@ firebaseModule.provider('firebasedb', function () {
                                 filteredQuestions = _.filter(questions, function (filterItem) {
                                     return (filterItem.Guid === questionObject.Guid);
                                 });
-
-                                console.log('questions : ', filteredQuestions);
                             }
-                            resolve(filteredQuestions);
+                            AnswersRef.once('value', function (aa) {
+                                var fireBaseData = aa.val();
+                                if (fireBaseData) {
+                                    AnswersList = convertFirebaseToModel('Answer', fireBaseData);
+                                    answersLoaded = true;
+                                }
+                                Promise.all(getOptionsForQuestions(filteredQuestions)).then(function(g){
+                                    console.log('After getting all the options for questions ', g);
+                                    resolve(filteredQuestions);
+                                });
+                            });
+
+
                         } else {
                             resolve([]);
                         }
@@ -277,7 +324,7 @@ firebaseModule.provider('firebasedb', function () {
                             if(answersLoaded && AnswersList.length > 0){
                                 resolve0level(getDefaultAnswers(AnswersList));
                             }else{
-                                console.warn("Answers are not available in Server");
+                                console.warn("Answers are not available in Server for question");
                                 resolve0level([]);
                             }
                         }

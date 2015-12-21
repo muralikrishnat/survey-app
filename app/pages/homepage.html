@@ -2,35 +2,16 @@
 <div class="container">
 	<div class="row">
 		<ol class="pull-left">
-			<li>
+			<li ng-repeat="question in ActiveQuestions track by $index">
 				<div class="query-section">
-					<p>Is everything fine?</p>
-					<input type="radio" name="query" value="Yes">Yes 
-					<input type="radio" name="query" value="No">No
-				</div>
-			</li>
-			<li>
-				<div class="query-section">
-					<p>Is everything fine?</p>
-					<input type="radio" name="query" value="Yes">Yes 
-					<input type="radio" name="query" value="No">No
-				</div>
-			</li>
-			<li>
-				<div class="query-section">
-					<p>Is everything fine?</p>
-					<input type="radio" name="query" value="Yes">Yes 
-					<input type="radio" name="query" value="No">No
-				</div>
-			</li>
-			<li>
-				<div class="query-section">
-					<p>Is everything fine?</p>
-					<input type="radio" name="query" value="Yes">Yes 
-					<input type="radio" name="query" value="No">No
+					<p style="text-align: left;">{{ question.Text}}</p>
+					<ul class="question-options">
+						<li ng-repeat="qOption in question.Options">
+							<input type="radio" name="{{question.Guid}}" value="{{qOption.Guid}}"> {{qOption.Text}}
+						</li>
+					</ul>
 				</div>
 			</li>
 		</ol>
-		
 	</div>
 </div>

@@ -202,3 +202,12 @@ ul.grid li img {
     display: block;
     border: none;
 }
+
+
+ul.question-options{
+    overflow: hidden;
+}
+ul.question-options li{
+    float: left;
+    border-bottom: none;
+}

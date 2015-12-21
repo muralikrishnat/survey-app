@@ -50,13 +50,14 @@ angular.module('pollingApp').controller('QuestionsController', function ($scope,
         //which is using as user reference to question(who added this question kind of details)
         //Note : we are setting this cookie value while user logged into the app
         var userGuid = $cookieStore.get('User-Guid');
-
-        firebasedb.Questions.Update({
-            'Text': $scope.newquestion.question,
-            'AddedBy': userGuid
-        }).then(function (Questions) {
-            $scope.newquestion.question = '';
-        });
+        if(userGuid && userGuid.replace(/ /g,'').length > 0) {
+            firebasedb.Questions.Update({
+                'Text': $scope.newquestion.question,
+                'AddedBy': userGuid
+            }).then(function (Questions) {
+                $scope.newquestion.question = '';
+            });
+        }
 
     };
 

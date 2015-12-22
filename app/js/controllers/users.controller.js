@@ -1,10 +1,20 @@
 angular.module('pollingApp').controller('UsersListController', function ($scope, $rootScope, firebasedb) {
     $scope.message = 'This is userslist screen';
+      $scope.safeApply = function (fn) {
+        var phase = this.$root.$$phase;
+        if (phase == '$apply' || phase == '$digest') {
+            if (fn && (typeof(fn) === 'function')) {
+                fn();
+            }
+        } else {
+            this.$apply(fn);
+        }
+    };
     // this code is for getting users whenever we make call
     firebasedb.Users.List().then(function (users) {
-        $scope.Users = users;
-        $scope.$apply();
-
+          $scope.safeApply(function () {
+            $scope.Users = users; 
+        });
         console.log(users);
     });
 

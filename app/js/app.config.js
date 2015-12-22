@@ -8,6 +8,7 @@ pollingApp.config(['$routeProvider', 'firebasedbProvider', function ($routeProvi
         .when('/login', {templateUrl: 'pages/login.html', controller: 'LoginController'})
         .when('/register', {templateUrl: 'pages/register.html', controller: 'RegisterController'})
         .when('/graphs', {templateUrl: 'pages/graphs.html', controller: 'GraphsController'})
+        .when('/logout',{templateUrl:'pages/logout.html', controller:'LogoutController'})
         .otherwise({redirectTo: '/home'});
 
     firebasedbProvider.config({Url: 'https://nimbu-polling.firebaseio.com'});

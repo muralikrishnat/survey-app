@@ -72,8 +72,7 @@ ul.showorder {
     width: 428px;
 }
 
-ul li {
-    border-bottom: 1px solid #ddd;
+ul li { 
     padding: 10px;
     overflow: hidden;
 }

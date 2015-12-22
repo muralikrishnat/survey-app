@@ -1,16 +1,23 @@
 <div class="container" ng-controller="ReportsController">
     <div class="row">  
-        <div class="col-md-8 col-md-offset-2" ng-init="accordion=1">
-            <div class="first-section">
-                <h3 class="accordion" ng-class="{active:accordion==1}">
-                <a href ng-click="accordion = 1">Question 1</a>
-                </h3>
-                <p class="accordion-content" ng-show="accordion==1">Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p> 
-                <div id="chart_div">
-                  <a href="#graphs">click here for graphs</a>
+   
+            <div class="col-md-8 col-md-offset-2" ng-init="accordion=1">
+                <div class="first-section">
+                 <ul>
+                   <li ng-repeat="question in ActiveQuestions track by $index">
+                    <h3 class="accordion" ng-class="{active:accordion==1}">
+                    <a href ng-click="accordion = 1"><p style="text-align: left;">{{ question.Text}}</p></a>
+                    </h3>
+                    <p class="accordion-content" ng-show="accordion==1">Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p> 
+                    <div id="chart_div">
+                      <a href="#graphs">click here for graphs</a>
+                    </div>
+                     </li>
+                </ul>
                 </div>
             </div>
-            <div class="second-section">
+       
+            <!-- <div class="second-section">
                 <h3 class="accordion" ng-class="{active:accordion==2}">
                 <a href ng-click="accordion = 2">Question 2</a>
                 </h3>
@@ -21,7 +28,6 @@
                 <a href ng-click="accordion = 3">Question 3</a>
                 </h3>
                 <p class="accordion-content" ng-show="accordion==3">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</p>
-            </div>
+            </div> -->
         </div>
-    </div>
-</div>
+    </div> 

@@ -378,6 +378,13 @@ firebaseModule.provider('firebasedb', function () {
                     } else if (questionObject.Ref && questionObject.Guid && isDelete) {
                         questionObject.Ref.remove(function (err) {
                             if (!err) {
+                                serviceObject.QuestionAnswers.List().then(function (qnaList) {
+                                    for(var i = 0; i < qnaList.length ; i++){
+                                        if(qnaList.QuestionGuid === questionObject.Guid) {
+                                            qnaList[i].Ref.remove();
+                                        }
+                                    }
+                                });
                                 resolve({"ExeStatus": "SUCCESS"});
                             } else {
                                 resolve({"ExeStatus": "FAIL"});

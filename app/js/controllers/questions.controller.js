@@ -62,6 +62,8 @@ angular.module('pollingApp').controller('QuestionsController', function ($scope,
     };
 
     $scope.delete = function (question) {
+        //TODO: use firebase service to delete question instead of using firebase Ref, b'coz we have to remove respective options also.
+        
         //Here question object is coming from html under part of ng-click function
         //whenever user clicks on delete/deactivate button then this $scope.delete method call with question object
         //in that question object 'Ref' property is there to refer firebase reference
@@ -72,7 +74,6 @@ angular.module('pollingApp').controller('QuestionsController', function ($scope,
             //for eg., we are using the firebaseRef.on('value',...)
             //if we use 'on' that function will execute whenever there is a change in firebase db
             if(!err) {
-
                 console.log('deletion of question successfully done');
             }
         });

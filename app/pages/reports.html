@@ -1,33 +1,54 @@
 <div class="container" ng-controller="ReportsController">
-    <div class="row">  
-   
-            <div class="col-md-8 col-md-offset-2" ng-init="accordion=1">
-                <div class="first-section">
-                 <ul>
-                   <li ng-repeat="question in ActiveQuestions track by $index">
-                    <h3 class="accordion" ng-class="{active:accordion==1}">
-                    <a href ng-click="accordion = 1"><p style="text-align: left;">{{ question.Text}}</p></a>
-                    </h3>
-                    <p class="accordion-content" ng-show="accordion==1">Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p> 
-                    <div id="chart_div">
-                      <a href="#graphs">click here for graphs</a>
-                    </div>
-                     </li>
+    <div class="row">
+
+        <div class="col-md-8 col-md-offset-2" ng-init="accordion=1">
+            <div class="first-section">
+                <ul>
+                    <li ng-repeat="question in ActiveQuestions track by $index">
+                        <h3 class="accordion" ng-class="{active:accordion==1}">
+                            <a href ng-click="accordion = 1"><p style="text-align: left;">{{ question.Text}}</p></a>
+                        </h3>
+                        <p class="accordion-content" ng-show="accordion==1">Lorem Ipsum is that it has a more-or-less
+                            normal distribution of letters, as opposed to using</p>
+                        <div id="chart_div">
+                            <a href="#graphs">click here for graphs</a>
+                        </div>
+                    </li>
                 </ul>
-                </div>
             </div>
-       
-            <!-- <div class="second-section">
-                <h3 class="accordion" ng-class="{active:accordion==2}">
-                <a href ng-click="accordion = 2">Question 2</a>
-                </h3>
-                <p class="accordion-content" ng-show="accordion==2">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
-            </div>
-            <div class="third-section">
-                <h3 class="accordion" ng-class="{active:accordion==3}">
-                <a href ng-click="accordion = 3">Question 3</a>
-                </h3>
-                <p class="accordion-content" ng-show="accordion==3">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</p>
-            </div> -->
         </div>
-    </div> 
+
+        <!--<div ng-repeat="question in ActiveQuestions track by $index">-->
+        <!--<div>Yes count : <span ng-bind="question."></span></div>-->
+        <!--</div>-->
+        <!--1. Are you monkey?-->
+        <!--Yes Count: 4 -->
+        <!--No Count : 3-->
+
+        <!--1. Are you monkey?-->
+        <!--Selected Anwer : Yes-->
+        <!--Answer By : Nipuna-->
+        <!--Answerd on: 24th Dec-->
+
+        <!--<div ng-repeat="question in ActiveQuestions track by $index">-->
+        <!--<div ng-repeat="answer in question.SelectedAnswers">-->
+        <!--<div>SelectedAnswer : <span>{{answer.Text}}</span></div>-->
+        <!--<div>Selected By : <span>{{answer.User}}</span></div>-->
+        <!--<div>Answered On : <span>{{answer.AnsweredOn}}</span></div>-->
+        <!--</div>-->
+        <!--</div>-->
+
+        <!-- <div class="second-section">
+            <h3 class="accordion" ng-class="{active:accordion==2}">
+            <a href ng-click="accordion = 2">Question 2</a>
+            </h3>
+            <p class="accordion-content" ng-show="accordion==2">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using</p>
+        </div>
+        <div class="third-section">
+            <h3 class="accordion" ng-class="{active:accordion==3}">
+            <a href ng-click="accordion = 3">Question 3</a>
+            </h3>
+            <p class="accordion-content" ng-show="accordion==3">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form</p>
+        </div> -->
+    </div>
+</div>

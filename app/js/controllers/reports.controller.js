@@ -22,4 +22,9 @@ angular.module('pollingApp').controller('ReportsController', function ($scope,$r
             $scope.ActiveQuestions = d;
         });
     });
+
+    var getYesAnswers = function (question) {
+
+    };
+
 });

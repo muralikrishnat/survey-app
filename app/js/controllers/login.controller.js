@@ -22,7 +22,10 @@ angular.module('pollingApp').controller('LoginController', function ($scope,fire
                 //calling $apply to get effect added cookies to browser cookies
                 //and will take to home page on change of the $location.path
                 //TODO: use safe apply If there is any problem with $apply() ,for now $apply will serve our needs
+                $rootScope.$emit('user-changed');
                 $rootScope.$apply();
+
+
 
 
                 //storing in local Storage

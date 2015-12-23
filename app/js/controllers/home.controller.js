@@ -22,4 +22,8 @@ angular.module('pollingApp').controller('HomePageController', function ($scope, 
             $scope.ActiveQuestions = d;
         });
     });
+
+    $scope.saveAnswer = function () {
+        console.log($scope.ActiveQuestions);
+    };
 });

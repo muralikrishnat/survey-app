@@ -1,21 +1,21 @@
 <h2>Today's Polling</h2>
 <div class="container">
-	<div class="row">
-		<ol class="pull-left">
-			<li ng-repeat="question in ActiveQuestions track by $index">
-				<div class="query-section">
-					<p style="text-align: left;">{{ question.Text}}</p>
-					<ul class="question-options">
-						<li ng-repeat="qOption in question.Options">
-							<input type="radio" name="{{question.Guid}}" value="{{qOption.Guid}}"> {{qOption.Text}}
-						</li>
-					</ul>
-				</div>
-			</li>
-		</ol>
-		
-	</div>
-	 <div class="save-question pull-left">
-              <button class="btn btn-info" ng-click="saveAnswer()">SaveAnswer</button>
-         </div>
+    <div class="row">
+        <ol class="pull-left">
+            <li ng-repeat="question in ActiveQuestions track by $index">
+                <div class="query-section">
+                    <p style="text-align: left;">{{ question.Text}}</p>
+                    <ul class="question-options">
+                        <li ng-repeat="qOption in question.Options">
+                            <input type="radio" name="{{question.Guid}}" ng-model="question.SelectedAnswer" value="{{qOption.Guid}}"> {{qOption.Text}}
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ol>
+
+    </div>
+    <div class="save-question pull-left">
+        <button class="btn btn-info" ng-click="saveAnswer()">SaveAnswer</button>
+    </div>
 </div>
